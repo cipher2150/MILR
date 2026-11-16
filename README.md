@@ -2,7 +2,7 @@
 
 A product case study on redesigning a fashion e-commerce loyalty program so that members shop more often, without raising the discount cost per order.
 
-**Live page:** `https://your-link-here`
+**Live page:** `https://myntraloyalty.vercel.app/`
 
 ## The case in brief
 
