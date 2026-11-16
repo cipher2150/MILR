@@ -1,0 +1,352 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Myntra Insider Loyalty Revamp | Product Case Study</title>
+<meta name="description" content="A product case study: redesigning a fashion loyalty program to drive repeat orders without raising discount cost.">
+<style>
+:root{
+  --bg:#faf6f1; --card:#fffdfa; --ink:#2a1f24; --muted:#6f6168; --line:#e7dcd2;
+  --accent:#7b1e3a; --accent2:#b8893b; --tint:#f5e9e8; --good:#2f7a5b; --warn:#a8692a; --on:#fff;
+  --shadow:0 2px 12px rgba(42,31,36,.06);
+}
+@media (prefers-color-scheme:dark){
+  :root{--bg:#1a1316; --card:#241a1e; --ink:#f3ebe7; --muted:#b8a8ae; --line:#3a2b31; --tint:#33202a;
+    --accent:#e08aa3; --accent2:#d4a85a; --good:#5fbf94; --warn:#e0a35c; --on:#1a1316; --shadow:0 2px 12px rgba(0,0,0,.35);}
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:76px}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+a{color:var(--accent)}
+.wrap{max-width:960px;margin:0 auto;padding:0 20px}
+.skip{position:absolute;left:-999px}.skip:focus{left:12px;top:12px;background:var(--card);padding:8px 12px;z-index:100}
+
+/* progress + nav */
+#bar{position:fixed;top:0;left:0;height:3px;width:0;background:var(--accent);z-index:60}
+nav{position:sticky;top:0;z-index:50;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+nav .wrap{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;padding-top:10px;padding-bottom:10px}
+nav .wrap::-webkit-scrollbar{display:none}
+nav a{white-space:nowrap;text-decoration:none;color:var(--muted);font-size:14px;font-weight:600;padding:6px 12px;border-radius:999px;transition:.15s}
+nav a:hover{color:var(--ink);background:var(--tint)}
+nav a.on{color:var(--on);background:var(--accent)}
+
+/* hero */
+header.hero{padding:64px 0 48px;border-bottom:1px solid var(--line)}
+.eyebrow{display:inline-block;font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);background:var(--tint);padding:6px 12px;border-radius:999px}
+h1{font-size:clamp(34px,6vw,58px);line-height:1.1;margin:18px 0 14px;letter-spacing:-.02em}
+h1 span{color:var(--accent)}
+.lede{font-size:19px;color:var(--muted);max-width:680px;margin:0}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;margin-top:22px;color:var(--muted);font-size:14px}
+.meta b{color:var(--ink)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin-top:34px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;box-shadow:var(--shadow)}
+.stat b{display:block;font-size:30px;line-height:1.1;color:var(--accent)}
+.stat span{font-size:14px;color:var(--muted)}
+
+/* sections */
+section{padding:56px 0 8px}
+.kicker{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.num{width:30px;height:30px;border-radius:50%;background:var(--accent);color:var(--on);display:grid;place-items:center;font-size:14px;font-weight:700}
+h2{font-size:clamp(26px,4vw,36px);margin:0;letter-spacing:-.01em}
+.sub{color:var(--muted);margin:6px 0 24px;max-width:720px}
+h3{margin:0 0 6px;font-size:18px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:var(--shadow)}
+.grid{display:grid;gap:16px}
+.g2{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
+.card p{margin:0;color:var(--muted)}
+.callout{border-left:4px solid var(--accent);background:var(--tint);border-radius:0 14px 14px 0;padding:16px 20px;margin-top:20px}
+.callout p{margin:0}
+
+/* tables */
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:16px;background:var(--card);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;min-width:560px;font-size:15px}
+th,td{text-align:left;padding:13px 16px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);background:var(--tint)}
+tr:last-child td{border-bottom:0}
+.tag{display:inline-block;font-size:12px;font-weight:700;padding:3px 10px;border-radius:999px;background:var(--tint);color:var(--accent)}
+.tag.g{background:color-mix(in srgb,var(--good) 15%,transparent);color:var(--good)}
+.tag.w{background:color-mix(in srgb,var(--warn) 17%,transparent);color:var(--warn)}
+
+/* segments + tiers */
+.seg.focus{border:2px solid var(--accent)}
+.seg .tag{margin-bottom:10px}
+.tier{position:relative;text-align:center}
+.tier.gold{border:2px solid var(--accent);transform:translateY(-6px)}
+.tier h3{font-size:22px}
+.tier .how{font-weight:700;color:var(--accent);margin-bottom:10px;display:block}
+.tier ul{list-style:none;padding:0;margin:0;text-align:left}
+.tier li{padding:6px 0 6px 24px;position:relative;color:var(--muted);font-size:15px}
+.tier li::before{content:"✓";position:absolute;left:0;color:var(--good);font-weight:700}
+.ladder{height:8px;border-radius:99px;background:linear-gradient(90deg,#c9bfc0,var(--accent2),var(--accent));margin:0 0 18px}
+
+/* journey */
+.steps{list-style:none;margin:0;padding:0;position:relative}
+.steps::before{content:"";position:absolute;left:19px;top:8px;bottom:8px;width:2px;background:var(--line)}
+.steps li{position:relative;padding:0 0 22px 56px}
+.steps li::before{counter-increment:s;content:counter(s);position:absolute;left:0;top:0;width:40px;height:40px;border-radius:50%;background:var(--card);border:2px solid var(--accent);color:var(--accent);display:grid;place-items:center;font-weight:700}
+.steps{counter-reset:s}
+.steps b{display:block}
+.steps span{color:var(--muted)}
+
+/* rollout */
+.phases{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:10px;align-items:stretch}
+.phase.on{border:2px solid var(--accent);background:var(--tint)}
+.phase small{color:var(--muted);font-weight:600}
+.phase ul{margin:10px 0 0;padding-left:18px;color:var(--muted);font-size:15px}
+.gate{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;font-size:12px;color:var(--muted);max-width:110px}
+.gate i{width:30px;height:30px;background:var(--accent);transform:rotate(45deg);border-radius:6px;margin-bottom:12px}
+.gate b{color:var(--ink)}
+@media(max-width:780px){
+  .phases{grid-template-columns:1fr}
+  .gate{flex-direction:row;gap:12px;max-width:none;text-align:left;padding:2px 8px}
+  .gate i{margin:0;width:18px;height:18px;flex:none}
+}
+.checks{list-style:none;padding:0;margin:0}
+.checks li{padding:10px 0 10px 34px;position:relative;border-bottom:1px solid var(--line)}
+.checks li:last-child{border:0}
+.checks li::before{content:"";position:absolute;left:4px;top:15px;width:16px;height:16px;border:2px solid var(--accent);border-radius:5px}
+ol.next{padding-left:22px;margin:0}ol.next li{padding:5px 0}
+
+footer{margin-top:72px;padding:32px 0 48px;border-top:1px solid var(--line);color:var(--muted);font-size:14px}
+#top{position:fixed;right:18px;bottom:18px;width:44px;height:44px;border-radius:50%;border:0;background:var(--accent);color:var(--on);font-size:20px;cursor:pointer;box-shadow:var(--shadow);opacity:0;pointer-events:none;transition:.2s}
+#top.show{opacity:1;pointer-events:auto}
+a:focus-visible,button:focus-visible{outline:3px solid var(--accent2);outline-offset:2px}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+@media print{nav,#bar,#top{display:none}section{break-inside:avoid}.card,.tw{box-shadow:none}}
+</style>
+</head>
+<body>
+<a class="skip" href="#overview">Skip to content</a>
+<div id="bar"></div>
+
+<nav aria-label="Case study sections"><div class="wrap">
+  <a href="#overview">Overview</a>
+  <a href="#problem">Problem</a>
+  <a href="#goals">Goals</a>
+  <a href="#users">Users</a>
+  <a href="#solution">Solution</a>
+  <a href="#journey">Journey</a>
+  <a href="#rollout">Rollout</a>
+  <a href="#risks">Risks</a>
+  <a href="#next">Next steps</a>
+</div></nav>
+
+<header class="hero"><div class="wrap">
+  <span class="eyebrow">Product case study</span>
+  <h1>Myntra Insider <span>Loyalty Revamp</span></h1>
+  <p class="lede">From "collect points, maybe use them someday" to "shop a little more often and feel the benefit right away".</p>
+  <div class="meta">
+    <span><b>By</b> Your Name</span>
+    <span><b>Role</b> Product Management Intern (case study)</span>
+    <span><b>Date</b> November 2026</span>
+    <span><b>Read time</b> ~6 min</span>
+  </div>
+  <div class="stats">
+    <div class="stat"><b>+10%</b><span>orders per active member in 6 months</span></div>
+    <div class="stat"><b>+3 pp</b><span>90-day repeat purchase rate</span></div>
+    <div class="stat"><b>Flat</b><span>net discount cost per order</span></div>
+    <div class="stat"><b>5%</b><span>of members in the first pilot</span></div>
+  </div>
+</div></header>
+
+<main class="wrap">
+
+<section id="overview">
+  <div class="kicker"><span class="num">1</span><h2>Overview</h2></div>
+  <p class="sub">The whole case in one screen. Everything below expands on these five points.</p>
+  <div class="grid g3">
+    <div class="card"><h3>Problem</h3><p>Rewards feel far away and hard to understand, so most members never move beyond the entry tier.</p></div>
+    <div class="card"><h3>Idea</h3><p>A simple 3-tier ladder, a visible progress bar, and perks you get immediately.</p></div>
+    <div class="card"><h3>Who it helps</h3><p>Shoppers who buy 2 to 4 times a year: the "almost loyal" group and the biggest one to convert.</p></div>
+    <div class="card"><h3>Expected result</h3><p>About +10% repeat orders among members in 6 months, with cost per order flat.</p></div>
+    <div class="card"><h3>The ask</h3><p>Approve a two-phase pilot, starting with 5% of members and a control group.</p></div>
+  </div>
+  <div class="callout"><p><b>Note on numbers:</b> every target, threshold and duration in this case study is a planning assumption. They would be validated against internal data before any commitment.</p></div>
+</section>
+
+<section id="problem">
+  <div class="kicker"><span class="num">2</span><h2>The problem</h2></div>
+  <p class="sub">Loyalty only pays off if members come back, and today's program makes the reason to come back too faint. Fashion e-commerce has high returns and heavy discounting, so a repeat order from an existing customer is far cheaper than winning a new one.</p>
+  <div class="grid g3">
+    <div class="card"><h3>Unclear value</h3><p>Members cannot say in one sentence what each tier gives them.</p></div>
+    <div class="card"><h3>Slow progress</h3><p>The next tier takes so long to reach that it feels unreachable.</p></div>
+    <div class="card"><h3>Points feel like fine print</h3><p>Rewards are earned at checkout but are hard to see, trust and spend.</p></div>
+    <div class="card"><h3>Same offers for everyone</h3><p>A first-time buyer and a monthly buyer see similar perks.</p></div>
+    <div class="card"><h3>Discounts do the loyalty job</h3><p>Big sale events drive orders, so loyalty adds little on top.</p></div>
+  </div>
+  <div class="callout"><p>These are hypotheses to confirm with data and member interviews, not proven findings.</p></div>
+</section>
+
+<section id="goals">
+  <div class="kicker"><span class="num">3</span><h2>Goals and success metrics</h2></div>
+  <p class="sub">The north-star is <b>orders per active member per year</b>. If members order more often and cost per order stays flat, the revamp worked.</p>
+  <div class="tw"><table>
+    <thead><tr><th>Metric</th><th>Role</th><th>Target (illustrative)</th></tr></thead>
+    <tbody>
+      <tr><td>Orders per active member per year</td><td><span class="tag">North-star</span></td><td>+10% in 6 months</td></tr>
+      <tr><td>90-day repeat purchase rate of members</td><td><span class="tag">Primary</span></td><td>+3 percentage points</td></tr>
+      <tr><td>Share of members reaching tier 2</td><td><span class="tag">Primary</span></td><td>+20% relative</td></tr>
+      <tr><td>Points redemption rate</td><td><span class="tag">Primary</span></td><td>Up from baseline (to be measured)</td></tr>
+      <tr><td>Net discount cost per order</td><td><span class="tag w">Guardrail</span></td><td>No increase</td></tr>
+      <tr><td>Return rate of members</td><td><span class="tag w">Guardrail</span></td><td>No increase</td></tr>
+      <tr><td>Program NPS or satisfaction</td><td><span class="tag w">Guardrail</span></td><td>Up by 5 points</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="users">
+  <div class="kicker"><span class="num">4</span><h2>Who it is for</h2></div>
+  <p class="sub">The revamp targets the middle of the base: shoppers who like Myntra but have not made it a habit.</p>
+  <div class="grid g3">
+    <div class="card seg"><span class="tag">Focus: medium</span><h3>Occasional buyers</h3><p><b>1 order a year</b>, mostly in big sales.<br>Want a reason to shop outside sale events.</p></div>
+    <div class="card seg focus"><span class="tag g">Focus: high</span><h3>Almost loyal</h3><p><b>2 to 4 orders a year.</b><br>Want quick wins and visible progress to the next tier.</p></div>
+    <div class="card seg"><span class="tag w">Focus: protect</span><h3>Power shoppers</h3><p><b>5+ orders a year.</b><br>Want status, early access and premium-feeling service.</p></div>
+  </div>
+</section>
+
+<section id="solution">
+  <div class="kicker"><span class="num">5</span><h2>The proposed solution</h2></div>
+  <p class="sub">Four changes: count orders instead of rupees, give benefits at once, show progress everywhere, and make points easy to spend.</p>
+  <div class="tw"><table>
+    <thead><tr><th></th><th>Today (assumed)</th><th>After the revamp</th></tr></thead>
+    <tbody>
+      <tr><td><b>Tier rule</b></td><td>Points or spend thresholds that are hard to track</td><td>Number of orders in the last 12 months</td></tr>
+      <tr><td><b>Benefits</b></td><td>Mostly points and occasional offers</td><td>Immediate perks at every tier: free delivery, early sale access</td></tr>
+      <tr><td><b>Progress</b></td><td>Hidden in the profile page</td><td>Progress bar on home, cart and order confirmation: "1 more order to Gold"</td></tr>
+      <tr><td><b>Using points</b></td><td>Many steps, unclear value</td><td>One tap at checkout, rupee value shown up front</td></tr>
+      <tr><td><b>Personal touch</b></td><td>Same for everyone</td><td>Nudges and perks matched to the segment</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3 style="margin:34px 0 14px">Proposed tier ladder <small style="color:var(--muted);font-weight:400">(working names and numbers, to be tested)</small></h3>
+  <div class="ladder" aria-hidden="true"></div>
+  <div class="grid g3">
+    <div class="card tier"><h3>Silver</h3><span class="how">Join free</span>
+      <ul><li>Base points on every order</li><li>Welcome perk on first order</li></ul></div>
+    <div class="card tier gold"><h3>Gold</h3><span class="how">3 orders in 12 months</span>
+      <ul><li>Free delivery</li><li>12-hour early sale access</li><li>1.5x points</li></ul></div>
+    <div class="card tier"><h3>Platinum</h3><span class="how">8 orders in 12 months</span>
+      <ul><li>Priority support</li><li>Free return pickup</li><li>24-hour early sale access</li><li>2x points</li></ul></div>
+  </div>
+  <div class="callout"><p><b>Why orders and not spend?</b> A count of orders is easy to understand, hard to game with one big purchase, and rewards the behaviour we want: coming back.</p></div>
+</section>
+
+<section id="journey">
+  <div class="kicker"><span class="num">6</span><h2>User journey</h2></div>
+  <p class="sub">Riya is an "almost loyal" shopper who has ordered twice this year. Here is how the revamp changes her next three months.</p>
+  <ol class="steps card">
+    <li><b>Home page</b><span>She sees a bar: "1 more order to unlock Gold: free delivery and early sale access".</span></li>
+    <li><b>Cart</b><span>The bar reappears, with the points she will earn on this order and their rupee value.</span></li>
+    <li><b>Order placed</b><span>The confirmation says "You are now Gold", and perks apply from her very next order.</span></li>
+    <li><b>Two weeks later</b><span>A 12-hour early access alert arrives for a sale on brands she has bought before.</span></li>
+    <li><b>Next checkout</b><span>She pays part of the bill with points in one tap, with no code to copy.</span></li>
+    <li><b>Month three</b><span>At 6 orders, a nudge shows she is 2 orders from Platinum, with perks in plain words.</span></li>
+  </ol>
+</section>
+
+<section id="rollout">
+  <div class="kicker"><span class="num">7</span><h2>Rollout plan</h2></div>
+  <p class="sub">The pilot is the decision needed now: a 5% test with a held-out control group, scaled only if repeat orders rise and cost per order stays flat.</p>
+  <div class="phases">
+    <div class="card phase on"><small>Weeks 1 to 8</small><h3>1. Pilot</h3>
+      <ul><li>5% of members get the revamp</li><li>5% held out as control</li><li>Measure repeat rate and cost</li></ul></div>
+    <div class="gate"><i></i><b>Gate A</b>Repeat rate up vs control, cost per order flat</div>
+    <div class="card phase"><small>Weeks 9 to 16</small><h3>2. Expand</h3>
+      <ul><li>25%, then 50% of members</li><li>Tune tier numbers and perks</li><li>Add nudges per segment</li></ul></div>
+    <div class="gate"><i></i><b>Gate B</b>Returns and cost within the set cap</div>
+    <div class="card phase"><small>Week 17 onward</small><h3>3. Full launch</h3>
+      <ul><li>All members</li><li>Current status kept 12 months</li><li>Weekly metric review</li></ul></div>
+  </div>
+  <h3 style="margin:30px 0 12px">How the pilot test works</h3>
+  <div class="grid g2">
+    <div class="card"><h3>Groups</h3><p>5% of members see the revamp, and a matching 5% keep the old program.</p></div>
+    <div class="card"><h3>Length</h3><p>At least 8 weeks, with repeat orders read again at 90 days.</p></div>
+    <div class="card"><h3>Split by segment</h3><p>Results are cut by occasional, almost loyal and power shoppers.</p></div>
+    <div class="card"><h3>Decision rule</h3><p>Scale only if repeat rate rises and every guardrail metric holds.</p></div>
+  </div>
+</section>
+
+<section id="risks">
+  <div class="kicker"><span class="num">8</span><h2>Risks and mitigations</h2></div>
+  <p class="sub">The biggest risk is paying for perks that members would have bought anyway.</p>
+  <div class="tw"><table>
+    <thead><tr><th>Risk</th><th>What could happen</th><th>Mitigation</th></tr></thead>
+    <tbody>
+      <tr><td><b>Cost creep</b></td><td>Free delivery and extra points raise cost per order</td><td>Cost cap per member, tracked as a guardrail</td></tr>
+      <tr><td><b>Cannibalisation</b></td><td>Perks go to orders members would have made anyway</td><td>Compare against a holdout group that sees no change</td></tr>
+      <tr><td><b>Abuse</b></td><td>Many tiny orders to reach a tier</td><td>Minimum order value counts toward progress</td></tr>
+      <tr><td><b>Returns rise</b></td><td>More orders also bring more returns</td><td>Tie perks to kept orders; watch return rate</td></tr>
+      <tr><td><b>Transition confusion</b></td><td>Members feel they lost points or status</td><td>Keep status for 12 months and show a clear "what changed" page</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="next">
+  <div class="kicker"><span class="num">9</span><h2>Open questions and next steps</h2></div>
+  <p class="sub">Five facts are missing, and each one changes a number in this case study.</p>
+  <div class="grid g2">
+    <div class="card"><h3>Open questions</h3>
+      <ul class="checks">
+        <li>What are today's tier rules, points value and baseline repeat rate?</li>
+        <li>What is the budget cap for perks per member per year?</li>
+        <li>Can free delivery be funded by smaller sale-event discounts?</li>
+        <li>Which teams own the home, cart and checkout screens?</li>
+        <li>How does Finance treat unspent points as a liability?</li>
+      </ul></div>
+    <div class="card"><h3>Next steps</h3>
+      <ol class="next">
+        <li>Pull baseline data for the three segments.</li>
+        <li>Interview about 10 members from each segment on the perks they value.</li>
+        <li>Design the progress bar and the one-tap points flow.</li>
+        <li>Take the pilot plan and cost cap to leadership for approval.</li>
+      </ol></div>
+  </div>
+</section>
+
+</main>
+
+<footer><div class="wrap">
+  <p>Independent case study created for learning and portfolio purposes.</p>
+  <p>Contact: <a href="saxena2150@gmail.com">saxena2150@gmail.com</a> · <a href="#">LinkedIn</a></p>
+</div></footer>
+
+<button id="top" aria-label="Back to top">↑</button>
+
+<script>
+(function(){
+  var bar=document.getElementById('bar'),top=document.getElementById('top');
+  function onScroll(){
+    var h=document.documentElement,max=h.scrollHeight-h.clientHeight;
+    bar.style.width=(max>0?h.scrollTop/max*100:0)+'%';
+    top.classList.toggle('show',h.scrollTop>600);
+  }
+  addEventListener('scroll',onScroll,{passive:true});onScroll();
+  top.onclick=function(){scrollTo({top:0})};
+
+  var links=[].slice.call(document.querySelectorAll('nav a')),
+      secs=[].slice.call(document.querySelectorAll('main section')),
+      strip=document.querySelector('nav .wrap'),locked=null;
+  function setActive(id){
+    links.forEach(function(a){
+      var on=a.getAttribute('href')==='#'+id;
+      if(on&&!a.classList.contains('on'))strip.scrollTo({left:a.offsetLeft-strip.clientWidth/2+a.offsetWidth/2});
+      a.classList.toggle('on',on);
+    });
+  }
+  function spy(){
+    if(locked)return;
+    var cur=secs[0],h=document.documentElement;
+    secs.forEach(function(s){if(s.getBoundingClientRect().top<=120)cur=s});
+    if(h.scrollTop+h.clientHeight>=h.scrollHeight-4)cur=secs[secs.length-1];
+    setActive(cur.id);
+  }
+  // a clicked link stays highlighted until the reader scrolls themselves
+  links.forEach(function(a){a.addEventListener('click',function(){locked=1;setActive(a.getAttribute('href').slice(1))})});
+  ['wheel','touchstart','keydown'].forEach(function(t){addEventListener(t,function(){locked=null},{passive:true})});
+  addEventListener('scroll',spy,{passive:true});spy();
+})();
+</script>
+</body>
+</html>
